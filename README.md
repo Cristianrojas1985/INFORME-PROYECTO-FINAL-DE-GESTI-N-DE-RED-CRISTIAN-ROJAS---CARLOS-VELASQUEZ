@@ -173,7 +173,7 @@ Diseñar, configurar y validar un **Sistema de Monitoreo Integral (SMI)** para i
 3. **Documentación**  
    - Establecer correspondencia entre claves en firmware y Zabbix.  
    - Buscar soluciones en foros especializados.  
-![C:\Users\Pc\Documents\QUINTO SEMESTRE\GESTION DE RED\Imagen Proyecto](1.jpg)
+![           ](1.jpg)
 ![C:\Users\Pc\Documents\QUINTO SEMESTRE\GESTION DE RED\Imagen Proyecto](2.jpg)
 ![C:\Users\Pc\Documents\QUINTO SEMESTRE\GESTION DE RED\Imagen Proyecto](3.jpg)
 ![C:\Users\Pc\Documents\QUINTO SEMESTRE\GESTION DE RED\Imagen Proyecto](4.jpg)

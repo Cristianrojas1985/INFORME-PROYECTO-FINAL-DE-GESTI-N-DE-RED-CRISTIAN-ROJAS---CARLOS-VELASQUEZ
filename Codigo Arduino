@@ -1,0 +1,100 @@
+// 1. Inclusión de Librerías
+#include <DHT.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// 2. Definición de Pines
+// PINES DIGITALES
+#define LED_PIN 3       // LED
+#define DHT_PIN 4       // Sensor DHT11
+#define ONE_WIRE_BUS 5  // Sensor DS18B20
+#define PIR_PIN 6       // Sensor PIR
+// PINES ANALÓGICOS
+#define HUMEDAD_SUELO_PIN A0 // Sensor de Humedad del Suelo
+
+// 3. Configuración del DHT11
+#define DHT_TYPE DHT11   // Definición del tipo de sensor DHT (DHT11, DHT22, etc.)
+DHT dht(DHT_PIN, DHT_TYPE); // Inicializa el sensor DHT
+
+// 4. Configuración del DS18B20
+OneWire oneWire(ONE_WIRE_BUS); // Inicializa la librería OneWire
+DallasTemperature sensors(&oneWire); // Pasa la referencia OneWire a Dallas Temperature
+
+// 5. Variables para Lecturas
+int valorHumedadSuelo = 0;
+int estadoPIR = 0;
+
+// ----------------------
+// FUNCIÓN SETUP (Se ejecuta una sola vez al inicio)
+// ----------------------
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Iniciando Monitoreo de Sensores...");
+
+  // Configuración de pines digitales
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(PIR_PIN, INPUT);
+
+  // Inicializa los sensores
+  dht.begin();
+  sensors.begin();
+}
+
+// ----------------------
+// FUNCIÓN LOOP (Se ejecuta repetidamente)
+// ----------------------
+void loop() {
+  // --- 1. Lectura del DHT11 (Temperatura y Humedad Ambiental)
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  // Verifica si las lecturas del DHT fallaron
+  if (isnan(h) || isnan(t)) {
+    Serial.println("¡Error al leer del sensor DHT11!");
+  } else {
+    Serial.print("Humedad Ambiental: ");
+    Serial.print(h);
+    Serial.print(" %\t");
+    Serial.print("Temperatura Ambiental: ");
+    Serial.print(t);
+    Serial.println(" *C");
+  }
+
+  // --- 2. Lectura del DS18B20 (Temperatura)
+  sensors.requestTemperatures(); // Envía el comando para obtener las temperaturas
+  float tempDS = sensors.getTempCByIndex(0); // Obtiene la temperatura del primer sensor
+
+  if (tempDS != DEVICE_DISCONNECTED_C) {
+    Serial.print("Temperatura DS18B20: ");
+    Serial.print(tempDS);
+    Serial.println(" *C");
+  } else {
+    Serial.println("¡Error al leer del sensor DS18B20!");
+  }
+
+  // --- 3. Lectura del Sensor PIR (Movimiento)
+  estadoPIR = digitalRead(PIR_PIN);
+
+  if (estadoPIR == HIGH) {
+    digitalWrite(LED_PIN, HIGH); // Enciende el LED
+    Serial.println("Movimiento detectado: ¡LED ENCENDIDO!");
+  } else {
+    digitalWrite(LED_PIN, LOW); // Apaga el LED
+    Serial.println("Sin movimiento: LED APAGADO");
+  }
+
+  // --- 4. Lectura del Sensor de Humedad del Suelo
+  valorHumedadSuelo = analogRead(HUMEDAD_SUELO_PIN);
+  
+  // Nota: Los valores típicos para este sensor son:
+  // Tierra Seca: ~900 (o más, depende de la calibración)
+  // Tierra Húmeda/Agua: ~300 (o menos)
+  
+  Serial.print("Humedad del Suelo (Valor Analógico): ");
+  Serial.println(valorHumedadSuelo);
+
+  Serial.println("---------------------------------");
+
+  // Espera un momento antes de la próxima lectura (importante para el DHT11)
+  delay(2000); 
+}
